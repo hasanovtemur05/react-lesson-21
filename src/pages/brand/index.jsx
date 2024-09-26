@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Space, Tooltip } from "antd";
 import { brand, category } from "@service";
 import { BrandModal, GlobalTable } from "@components";
 import { useNavigate } from "react-router-dom";
-import {DeleteOutlined} from '@ant-design/icons';
-import { EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined} from "@ant-design/icons";
 const Index = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
@@ -29,12 +28,12 @@ const Index = () => {
       limit: pageSize,
       page: current,
     }));
-    fetchBrands(); 
+    fetchBrands();
   };
 
   const fetchBrands = async () => {
     try {
-      const res = await brand.get(); 
+      const res = await brand.get();
       console.log("Fetched brands:", res);
       setData(res?.data?.data?.brands);
     } catch (error) {
@@ -44,7 +43,7 @@ const Index = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await category.get(); 
+      const res = await category.get();
       console.log("Fetched categories:", res);
       setCategories(res?.data?.data?.categories);
     } catch (error) {
@@ -59,7 +58,7 @@ const Index = () => {
 
   const handleSubmit = async (brandData) => {
     try {
-      console.log("Submitting brand data:", brandData); 
+      console.log("Submitting brand data:", brandData);
       if (editingBrand) {
         await brand.update(editingBrand.id, brandData);
       } else {
@@ -72,8 +71,8 @@ const Index = () => {
     }
   };
 
-  const handleEdit = (brand) => {
-    setEditingBrand(brand);
+  const handleEdit = (item) => {
+    setEditingBrand(item);
     setOpen(true);
   };
 
@@ -111,15 +110,17 @@ const Index = () => {
     {
       title: "Action",
       render: (_, record) => (
-        <span>
-          <Button
-            onClick={() => handleEdit(record)}
-            variant="solid"
-            color="danger"
-            style={{ marginRight: "8px", backgroundColor: "#ffcc55" }}
-          >
-            <EditOutlined /> 
-          </Button>
+        <Space>
+          <Tooltip>
+            <Button
+              onClick={() => handleEdit(record)}
+              variant="solid"
+              color="danger"
+              style={{ marginRight: "8px", backgroundColor: "#ffcc55" }}
+              icon={<EditOutlined />}
+            />
+          </Tooltip>
+
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
@@ -127,15 +128,16 @@ const Index = () => {
             cancelText="No"
             onConfirm={() => handleDelete(record.id)}
           >
-            <Button 
-            danger 
-            color="danger"
-            variant="solid"
-            >
-              <DeleteOutlined />
-            </Button>
+            <Tooltip>
+              <Button
+                danger
+                color="danger"
+                variant="solid"
+                icon={<DeleteOutlined />}
+              />
+            </Tooltip>
           </Popconfirm>
-        </span>
+        </Space>
       ),
     },
   ];
@@ -151,7 +153,11 @@ const Index = () => {
         editingBrand={editingBrand}
         categories={categories}
       />
-      <Button type="primary" onClick={handleCreate} style={{marginBottom:"10px"}}>
+      <Button
+        type="primary"
+        onClick={handleCreate}
+        style={{ marginBottom: "10px" }}
+      >
         Create Brand
       </Button>
       <GlobalTable

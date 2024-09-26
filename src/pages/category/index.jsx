@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Popconfirm } from "antd"; 
-import { category } from "@service"; 
-import { CategoryModal, GlobalTable } from "@components"; 
+import { Button, Popconfirm, Space, Tooltip } from "antd";
+import { category } from "@service";
+import { CategoryModal, GlobalTable } from "@components";
 import { useNavigate } from "react-router-dom";
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const Index = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategory, setEditingCategory] = useState([]);
   const [params, setParams] = useState({
     search: "",
     page: 1,
@@ -27,7 +27,7 @@ const Index = () => {
       limit: pageSize,
       page: current,
     }));
-    fetchCategories();  
+    fetchCategories();
   };
 
   const fetchCategories = async () => {
@@ -57,12 +57,12 @@ const Index = () => {
     }
   };
 
-  const handleEdit = (category) => {
-    setEditingCategory(category);
+  const editItem = (item) => {
+    setEditingCategory(item);
     setOpen(true);
   };
 
-  const handleDelete = async (id) => {
+  const deleteItem = async (id) => {
     try {
       await category.delete(id);
       fetchCategories();
@@ -83,26 +83,35 @@ const Index = () => {
     },
     {
       title: "Action",
+      key: "action",
       render: (_, record) => (
-        <span>
-          <Button
-            onClick={() => handleEdit(record)}
-            style={{ marginRight: "8px", backgroundColor: "#ffcc55" }}
-          >
-            <EditOutlined />
-          </Button>
+        <Space>
+          <Tooltip title="Edit">
+            <Button
+              onClick={() => editItem(record)}
+              style={{ marginRight: "8px", backgroundColor: "#ffcc55" }}
+              variant="solid"
+              color="danger"
+              icon={<EditOutlined />}
+            />
+          </Tooltip>
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
             okText="Yes"
             cancelText="No"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => deleteItem(record.id)}
           >
-            <Button danger variant="solid" color="danger">
-              <DeleteOutlined />
-            </Button>
+            <Tooltip title="Delete">
+              <Button
+                danger
+                variant="solid"
+                color="danger"
+                icon={<DeleteOutlined />}
+              />
+            </Tooltip>
           </Popconfirm>
-        </span>
+          </Space>
       ),
     },
   ];
@@ -111,13 +120,17 @@ const Index = () => {
 
   return (
     <div>
-      <CategoryModal 
-        open={open} 
-        handleClose={handleClose} 
-        handleSubmit={handleSubmit} 
-        editingCategory={editingCategory} 
+      <CategoryModal
+        open={open}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+        editingCategory={editingCategory}
       />
-      <Button type="primary" onClick={handleCreate} style={{marginBottom:"10px"}}>
+      <Button
+        type="primary"
+        onClick={handleCreate}
+        style={{ marginBottom: "10px" }}
+      >
         Create Category
       </Button>
       <GlobalTable

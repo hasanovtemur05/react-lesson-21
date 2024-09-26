@@ -11,6 +11,11 @@ const admin = [
         path: "/admin-layout/brand",
         icon:<ShopOutlined/>
     },
+    {
+        content: "Sub Category",
+        path: "/admin-layout/sub-category",
+        icon:<UnorderedListOutlined />
+    },
    
 ]
 export {admin}
