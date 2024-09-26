@@ -1,34 +1,54 @@
-import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
-import { brand, category } from "@service"; 
+import { useEffect, useState } from "react";
+import { Button, Popconfirm } from 'antd';
+import { brand, category } from "@service";
 import { BrandModal, GlobalTable } from "@components";
-
+import { useNavigate } from "react-router-dom";
+import {DeleteOutlined} from '@ant-design/icons';
+import { EditOutlined } from '@ant-design/icons';
 const Index = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editingBrand, setEditingBrand] = useState(null);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
+  const [params, setParams] = useState({
+    search: "",
+    page: 1,
+    limit: 3,
+  });
 
   const handleClose = () => {
     setOpen(false);
     setEditingBrand(null);
   };
 
+  const handleTableChange = (pagination) => {
+    const { current, pageSize } = pagination;
+    setParams((prev) => ({
+      ...prev,
+      limit: pageSize,
+      page: current,
+    }));
+    fetchBrands(); 
+  };
+
   const fetchBrands = async () => {
     try {
-      const res = await brand.get();
+      const res = await brand.get(); 
+      console.log("Fetched brands:", res);
       setData(res?.data?.data?.brands);
     } catch (error) {
-      console.log("Error fetching brands");
+      console.log("Error fetching brands:", error);
     }
   };
 
   const fetchCategories = async () => {
     try {
-      const res = await category.get();
-      setCategories(res?.data?.data?.categories); 
+      const res = await category.get(); 
+      console.log("Fetched categories:", res);
+      setCategories(res?.data?.data?.categories);
     } catch (error) {
-      console.log("Error fetching categories");
+      console.log("Error fetching categories:", error);
     }
   };
 
@@ -39,6 +59,7 @@ const Index = () => {
 
   const handleSubmit = async (brandData) => {
     try {
+      console.log("Submitting brand data:", brandData); 
       if (editingBrand) {
         await brand.update(editingBrand.id, brandData);
       } else {
@@ -72,47 +93,79 @@ const Index = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: "Name",
+      dataIndex: "name",
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
+      title: "Description",
+      dataIndex: "description",
     },
     {
-      title: 'Category ID',
-      dataIndex: 'category_id',
+      title: "Category ID",
+      dataIndex: "category_id",
     },
     {
-      title: 'file',
-      dataIndex: 'file',
+      title: "File",
+      dataIndex: "file",
     },
     {
-      title: 'Action',
+      title: "Action",
       render: (_, record) => (
         <span>
-          <Button onClick={() => handleEdit(record)} variant="outlined" color="primary" style={{ marginRight: '8px' }}>
-            Edit
+          <Button
+            onClick={() => handleEdit(record)}
+            variant="solid"
+            color="danger"
+            style={{ marginRight: "8px", backgroundColor: "#ffcc55" }}
+          >
+            <EditOutlined /> 
           </Button>
-          <Button onClick={() => handleDelete(record.id)} variant="outlined" color="secondary">
-            Delete
-          </Button>
+          <Popconfirm
+            title="Delete the task"
+            description="Are you sure to delete this task?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Button 
+            danger 
+            color="danger"
+            variant="solid"
+            >
+              <DeleteOutlined />
+            </Button>
+          </Popconfirm>
         </span>
       ),
     },
   ];
 
+  const total = data.length;
+
   return (
     <div>
-      <BrandModal 
-        open={open} 
-        handleClose={handleClose} 
-        handleSubmit={handleSubmit} 
-        editingBrand={editingBrand} 
-        categories={categories} 
+      <BrandModal
+        open={open}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+        editingBrand={editingBrand}
+        categories={categories}
       />
-      <Button variant="contained" color="primary" onClick={handleCreate}>Create Brand</Button>
-      <GlobalTable columns={columns} data={data} />
+      <Button type="primary" onClick={handleCreate} style={{marginBottom:"10px"}}>
+        Create Brand
+      </Button>
+      <GlobalTable
+        columns={columns}
+        data={data}
+        pagination={{
+          current: params.page,
+          pageSize: params.limit,
+          total: total,
+          showSizeChanger: true,
+          pageSizeOptions: ["2", "5", "7", "10", "12"],
+        }}
+        onChange={handleTableChange}
+      />
     </div>
   );
 };

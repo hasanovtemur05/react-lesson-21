@@ -1,5 +1,14 @@
-import React from 'react';
-import { Space, Table, Tag } from 'antd';
+import { Table } from 'antd';
 
-const Index = ({columns, data}) => <Table columns={columns} dataSource={data} />;
-export default Index;
+const GlobalTable = ({ columns, data, pagination, onChange }) => {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={pagination}
+      onChange={onChange}
+    />
+  );
+};
+
+export default GlobalTable;

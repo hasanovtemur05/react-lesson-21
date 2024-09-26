@@ -85,7 +85,7 @@ export default function BrandModal({ open, handleClose, handleSubmit, editingBra
                 as={TextField}
                 fullWidth
                 label="Brand Name"
-                helperText={<ErrorMessage name="name" component="div" className="text-red-600 text-[15px]" />}
+                helperText={<ErrorMessage name="name" component="div" style={{ color: 'red', fontSize: '15px' }} />}
                 sx={{ marginY: "15px" }}
               />
               <Field
@@ -95,11 +95,11 @@ export default function BrandModal({ open, handleClose, handleSubmit, editingBra
                 label="Description"
                 multiline
                 rows={4}
-                helperText={<ErrorMessage name="description" component="div" className="text-red-600 text-[15px]" />}
+                helperText={<ErrorMessage name="description" component="div" style={{ color: 'red', fontSize: '15px' }} />}
                 sx={{ marginY: "15px" }}
               />
               <Field name="category_id">
-                {({ field, form }) => (
+                {({ field }) => (
                   <Select
                     {...field}
                     fullWidth
@@ -119,7 +119,7 @@ export default function BrandModal({ open, handleClose, handleSubmit, editingBra
                   </Select>
                 )}
               </Field>
-              <ErrorMessage name="category_id" component="div" className="text-red-600 text-[15px]" />
+              <ErrorMessage name="category_id" component="div" style={{ color: 'red', fontSize: '15px' }} />
               <input
                 name="file"
                 type="file"
@@ -128,7 +128,6 @@ export default function BrandModal({ open, handleClose, handleSubmit, editingBra
                 }}
                 style={{ marginBottom: "15px" }}
               />
-            
               <Button variant="contained" color="success" type="submit" disabled={isSubmitting} fullWidth>
                 {editingBrand?.id ? "Update" : "Create"}
               </Button>
